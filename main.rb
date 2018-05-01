@@ -5,7 +5,7 @@ require_relative '../BlackJack/cards'
 
 class Main
   attr_reader :deck, :name, :constant_deck, :sum_cards, :your_sum, :diller_sum
-  attr_accessor :cards
+  attr_accessor :cards, :new_cards
   @deck = []
 
   def start
@@ -28,7 +28,7 @@ class Main
       when 2
         give_out_cards
       when 3
-        add_card(@player)
+          add_cards
       when 4
           miss_movie
       when 5
@@ -50,8 +50,9 @@ class Main
   end
 
   def give_out_cards
-    @deck = Cards.new.cards
-    @constant_deck = @deck
+    @new_cards = Cards.new
+    @deck = @new_cards.cards
+    @constant_deck = @new_cards.cards
 #обновление списка карт. Реализовано плохо, нужно потом переделать
     3.times do
     @player.cards.delete_at(0)
@@ -65,16 +66,21 @@ class Main
     end
     puts "Ваши карты, #{@name}"
     puts @player.cards
-    #puts "Карты диллера"
-    #puts @diller.cards
+    puts "Карты диллера"
+    puts @diller.cards
     puts 'Сумма ваших очков:'
-    puts @your_sum = value_cards(@player)
-    # puts 'Сумма очков диллера'
-    # puts @diller_sum = value_cards(@diller)
+    puts @your_sum = @new_cards.value_cards(@player)
+    puts 'Сумма очков диллера'
+    puts @diller_sum = @new_cards.value_cards(@diller)
+  end
+
+  def add_cards
+    add_card(@player)
+    add_card(@diller)
   end
 
   def miss_movie
-    if value_cards(@diller) > 16
+    if @new_cards.value_cards(@diller) > 16
       puts 'Диллеру хватит'
       return
     else
@@ -89,57 +95,18 @@ class Main
 
   def add_card(name)
     choose_card
+    return if name.cards.length == 3
+    return if name == @diller && @new_cards.value_cards(@diller) > 16
     name.cards << @choosen_card
     if name.name == @player.name then puts "Добавленная карта #{@choosen_card}"
+      puts "Сумма ваших очков #{@new_cards.value_cards(name)}"
     else
       puts 'Диллеру добавлена карта'
     end
-# Эта часть только для проверки. Потом нужно будет убрать.
-#     if value_cards(name) > 21 then puts "#{name.name} проиграл. Сумма очков у #{name.name} равна #{value_cards(name)}"
-#       return
-#     else
-#       puts "Сумма очков у #{name.name}  равна #{value_cards(name)}"
-#     end
-  end
-
-  #назначить каждой карте её вес. Ключ - катра, значение - вес карты.
-  def cards_hash
-    @hash = {}
-    @constant_deck.each  do |card|
-      if card.to_i !=0
-        @hash[card] = card.to_i
-      elsif card.chars[0] == 'A'
-        @hash[card] = 11
-      else
-        @hash[card] = 10
-      end
-    end
-    @hash
-  end
-
-  #посчитать сумму очков у игрока
-  def value_cards(name)
-    @sum_cards = 0
-    name.cards.each do |x|
-      cards_hash.each_pair { |key, value| @sum_cards += value if x == key }
-    end
-    @sum_cards
   end
 
   def result
-    puts "Количество очков у #{@name} #{value_cards(@player)}"
-    puts "Количество очков у диллера #{value_cards(@diller)}"
-    if value_cards(@player) > 21 || value_cards(@player) < value_cards(@diller) then puts 'Проигрыш.'
-    elsif
-       value_cards(@player) > value_cards(@diller) then puts 'Поздравляем с победой'
-    elsif
-    value_cards(@player) > 21 && value_cards(@diller) > 21 then puts 'Ничья. Перебор у обоих игроков.'
-    elsif
-    value_cards(@player) < 21 && value_cards(@diller) > 21 then puts 'Выигрыш. Перебор у диллера.'
-    else
-      puts 'Ничья'
-    end
-    return
+    @new_cards.cards_result(@player, @diller)
   end
 end
 
