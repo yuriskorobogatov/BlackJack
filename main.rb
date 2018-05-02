@@ -4,8 +4,8 @@ require_relative 'players'
 require_relative '../BlackJack/cards'
 
 class Main
-  attr_reader :deck, :name, :constant_deck, :sum_cards, :your_sum, :diller_sum
-  attr_accessor :cards, :new_cards
+  attr_reader :deck, :name, :constant_deck, :your_sum
+  attr_accessor :new_cards
   @deck = []
 
   def start
@@ -28,11 +28,11 @@ class Main
       when 2
         give_out_cards
       when 3
-          add_cards
+        add_cards
       when 4
-          miss_movie
+        miss_movie
       when 5
-          result
+        result
       else
         puts 'Введите число от 0 до 5'
       end
@@ -53,10 +53,9 @@ class Main
     @new_cards = Cards.new
     @deck = @new_cards.cards
     @constant_deck = @new_cards.cards
-#обновление списка карт. Реализовано плохо, нужно потом переделать
     3.times do
-    @player.cards.delete_at(0)
-    @diller.cards.delete_at(0)
+      @player.cards.delete_at(0)
+      @diller.cards.delete_at(0)
     end
     2.times do
       choose_card
@@ -64,14 +63,16 @@ class Main
       choose_card
       @diller.cards << @choosen_card
     end
+    @player.make_a_bet
+    @diller.make_a_bet
     puts "Ваши карты, #{@name}"
     puts @player.cards
-    puts "Карты диллера"
-    puts @diller.cards
+    puts 'Карты диллера:'
+    puts '**'
     puts 'Сумма ваших очков:'
     puts @your_sum = @new_cards.value_cards(@player)
     puts 'Сумма очков диллера'
-    puts @diller_sum = @new_cards.value_cards(@diller)
+    puts '**'
   end
 
   def add_cards
@@ -82,7 +83,6 @@ class Main
   def miss_movie
     if @new_cards.value_cards(@diller) > 16
       puts 'Диллеру хватит'
-      return
     else
       add_card(@diller)
     end
@@ -99,7 +99,7 @@ class Main
     return if name == @diller && @new_cards.value_cards(@diller) > 16
     name.cards << @choosen_card
     if name.name == @player.name then puts "Добавленная карта #{@choosen_card}"
-      puts "Сумма ваших очков #{@new_cards.value_cards(name)}"
+                                      puts "Сумма ваших очков #{@new_cards.value_cards(name)}"
     else
       puts 'Диллеру добавлена карта'
     end
