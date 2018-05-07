@@ -4,9 +4,7 @@ require_relative 'players'
 require_relative '../BlackJack/cards'
 
 class Main
-  attr_reader :deck, :name, :constant_deck, :your_sum
-  attr_accessor :new_cards
-  @deck = []
+  attr_reader :name, :new_cards
 
   def start
     loop do
@@ -51,17 +49,13 @@ class Main
 
   def give_out_cards
     @new_cards = Cards.new
-    @deck = @new_cards.cards
-    @constant_deck = @new_cards.cards
-    3.times do
-      @player.cards.delete_at(0)
-      @diller.cards.delete_at(0)
-    end
+    @player.clear_cards
+    @diller.clear_cards
     2.times do
-      choose_card
-      @player.cards << @choosen_card
-      choose_card
-      @diller.cards << @choosen_card
+      @new_cards.choose_card
+      @player.cards << @new_cards.choosen_card
+      @new_cards.choose_card
+      @diller.cards << @new_cards.choosen_card
     end
     @player.make_a_bet
     @diller.make_a_bet
@@ -70,43 +64,32 @@ class Main
     puts 'Карты диллера:'
     puts '**'
     puts 'Сумма ваших очков:'
-    puts @your_sum = @new_cards.value_cards(@player)
+    puts @new_cards.value_cards(@player)
     puts 'Сумма очков диллера'
     puts '**'
   end
 
   def add_cards
-    add_card(@player)
-    add_card(@diller)
+    add_cards_to(@player)
+    add_cards_to(@diller)
   end
 
   def miss_movie
     if @new_cards.value_cards(@diller) > 16
       puts 'Диллеру хватит'
     else
-      add_card(@diller)
-    end
-  end
-
-  def choose_card
-    @choosen_card = @deck[rand(@deck.size)]
-    @deck -= [@choosen_card]
-  end
-
-  def add_card(name)
-    choose_card
-    return if name.cards.length == 3
-    return if name == @diller && @new_cards.value_cards(@diller) > 16
-    name.cards << @choosen_card
-    if name.name == @player.name then puts "Добавленная карта #{@choosen_card}"
-                                      puts "Сумма ваших очков #{@new_cards.value_cards(name)}"
-    else
-      puts 'Диллеру добавлена карта'
+      add_cards_to(@diller)
     end
   end
 
   def result
     @new_cards.cards_result(@player, @diller)
+  end
+
+  def add_cards_to(who)
+    @new_cards.choose_card
+    added_card = @new_cards.choosen_card
+    who.add_card(added_card, @player, @diller, @new_cards)
   end
 end
 
