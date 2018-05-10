@@ -2,9 +2,12 @@
 
 require_relative 'players'
 require_relative '../BlackJack/cards'
+require_relative 'game'
+require_relative '../../my_tasks/BlackJack/set'
 
 class Main
-  attr_reader :name, :new_cards
+  attr_reader :name
+  attr_accessor :new_game, :new_set
 
   def start
     loop do
@@ -43,53 +46,63 @@ class Main
     puts 'Введите свое имя'
     @name = gets.chomp
     puts "Рад вас поприветствовать, #{@name}"
-    @player = Players.new(name)
-    @diller = Players.new('Diller')
+    @new_game = Game.new(@name)
   end
 
   def give_out_cards
-    @new_cards = Cards.new
-    @player.clear_cards
-    @diller.clear_cards
-    2.times do
-      @new_cards.choose_card
-      @player.cards << @new_cards.choosen_card
-      @new_cards.choose_card
-      @diller.cards << @new_cards.choosen_card
+    if @new_game.player.money.zero? || @new_game.diller.money.zero?
+      puts 'Нет денег для продолжения игры. Начните новую игру'
+      return
     end
-    @player.make_a_bet
-    @diller.make_a_bet
+    @new_set = SetCards.new(@new_game.player, @new_game.diller)
     puts "Ваши карты, #{@name}"
-    puts @player.cards
+    puts @new_game.player.cards
     puts 'Карты диллера:'
     puts '**'
     puts 'Сумма ваших очков:'
-    puts @new_cards.value_cards(@player)
-    puts 'Сумма очков диллера'
+    puts @new_set.value_cards(@new_game.player, @new_set.object_cards.cards_hash)
+    puts 'Сумма очков диллера:'
     puts '**'
   end
 
   def add_cards
-    add_cards_to(@player)
-    add_cards_to(@diller)
+    @new_set.add_card_to(@new_game.player)
+    puts "Игроку добавлена карта #{@new_game.player.cards[-1]}"
+    puts "Количество очков игрока: #{@new_set.value_cards(@new_game.player, @new_set.object_cards.cards_hash)}"
+    if @new_set.value_cards(@new_game.diller, @new_set.object_cards.cards_hash) > 16
+      return
+    else
+      @new_set.add_card_to(@new_game.diller)
+      puts 'Диллеру добавлена карта'
+    end
   end
 
   def miss_movie
-    if @new_cards.value_cards(@diller) > 16
+    if @new_set.value_cards(@new_game.diller, @new_set.object_cards.cards_hash) > 16 ||
+       @new_game.diller.cards.length == 3
       puts 'Диллеру хватит'
     else
-      add_cards_to(@diller)
+      @new_set.add_card_to(@new_game.diller)
+      puts 'Диллеру добавлена карта'
     end
   end
 
   def result
-    @new_cards.cards_result(@player, @diller)
-  end
-
-  def add_cards_to(who)
-    @new_cards.choose_card
-    added_card = @new_cards.choosen_card
-    who.add_card(added_card, @player, @diller, @new_cards)
+    puts "Количество очков у Вас #{@new_set.value_cards(@new_game.player, @new_set.object_cards.cards_hash)}"
+    puts "Количество очков у диллера #{@new_set.value_cards(@new_game.diller, @new_set.object_cards.cards_hash)}"
+    if @new_set.cards_result(@new_game.player, @new_game.diller, @new_set.object_cards.cards_hash) == 'win'
+      puts 'Победа'
+      puts " У вас #{@new_game.win(@new_game.player)} рублей"
+      puts " У диллера #{@new_game.loose(@new_game.diller)} рублей"
+    elsif @new_set.cards_result(@new_game.player, @new_game.diller, @new_set.object_cards.cards_hash) == 'loose'
+      puts 'Проигрыш'
+      puts " У вас #{@new_game.loose(@new_game.player)} рублей"
+      puts " У диллера #{@new_game.win(@new_game.diller)} рублей"
+    else
+      puts 'Ничья'
+      puts " У вас #{@new_game.player.money} рублей"
+      puts " У диллера #{@new_game.diller.money} рублей"
+    end
   end
 end
 
