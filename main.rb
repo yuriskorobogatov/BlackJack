@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../../my_tasks/BlackJack/game'
+require_relative 'game.rb'
 
 class Main
   attr_reader :name, :game

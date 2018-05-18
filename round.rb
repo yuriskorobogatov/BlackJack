@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../BlackJack/cards'
+require_relative 'cards.rb'
 class Round
   attr_reader :object_cards, :player, :dealer
   attr_accessor :cards

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative '../../my_tasks/BlackJack/players'
-require_relative '../../my_tasks/BlackJack/round'
+require_relative 'players.rb'
+require_relative 'round.rb'
 
 class Game
   attr_reader :player, :dealer
