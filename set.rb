@@ -2,18 +2,33 @@
 
 require_relative '../BlackJack/cards'
 class SetCards
-  attr_reader :object_cards
+  attr_reader :object_cards, :player, :dealer
+  attr_accessor :cards
 
-  def initialize(player, diller)
+  def initialize(player, dealer)
+    @player = player
+    @dealer = dealer
     @object_cards = Cards.new
-    3.times do
-      player.cards.delete_at(0)
-      diller.cards.delete_at(0)
-    end
-
+      player.cards.clear
+      dealer.cards.clear
     2.times do
       add_card_to(player)
-      add_card_to(diller)
+      add_card_to(dealer)
+    end
+  end
+
+  def player_move(deсision)
+    case deсision
+      when :else_one_card
+        add_card_to(@player)
+        score_player
+        check_dealer
+        cards_result
+      when :dealer_move
+        check_dealer
+        cards_result
+      when :open
+        cards_result
     end
   end
 
@@ -23,30 +38,32 @@ class SetCards
     name.cards << added_card
   end
 
-  def value_cards(name, cards_hash)
-    @sum_cards = 0
-    name.cards.each do |x|
-      cards_hash.each_pair { |key, value| @sum_cards += value if x == key }
-    end
-    if @sum_cards > 21 && name.cards.find do |x|
-      x.chars[0] == 'A'
-    end
-      @sum_cards -= 10
-    end
-    @sum_cards
+  def score_dealer
+    @object_cards.value_cards(@dealer, @object_cards.cards_hash)
   end
 
-  def cards_result(name1, name2, cards_hash)
-    if value_cards(name1, cards_hash) > 21 && value_cards(name2, cards_hash) > 21
+  def score_player
+    @object_cards.value_cards(@player, @object_cards.cards_hash)
+  end
+
+  #если у диллера меньше 16 очков, добавляем карту
+  def check_dealer
+    return if @object_cards.value_cards(@dealer, @object_cards.cards_hash) > 16
+    add_card_to(@dealer)
+  end
+
+
+  def cards_result(name1 = @player, name2 = @dealer, cards_hash = @object_cards.cards_hash)
+    if @object_cards.value_cards(name1, cards_hash) > 21 && @object_cards.value_cards(name2, cards_hash) > 21
       'draw'
-    elsif value_cards(name1, cards_hash) > 21 && value_cards(name2, cards_hash) <= 21
-      'loose'
-    elsif value_cards(name1, cards_hash) <= 21 && value_cards(name2, cards_hash) > 21
-      'win'
-    elsif value_cards(name1, cards_hash) > value_cards(name2, cards_hash)
-      'win'
-    elsif value_cards(name1, cards_hash) < value_cards(name2, cards_hash)
-      'loose'
+    elsif @object_cards.value_cards(name1, cards_hash) > 21 && @object_cards.value_cards(name2, cards_hash) <= 21
+      name2.name
+    elsif @object_cards.value_cards(name1, cards_hash) <= 21 && @object_cards.value_cards(name2, cards_hash) > 21
+      name1.name
+    elsif @object_cards.value_cards(name1, cards_hash) > @object_cards.value_cards(name2, cards_hash)
+      name1.name
+    elsif @object_cards.value_cards(name1, cards_hash) < @object_cards.value_cards(name2, cards_hash)
+      name2.name
     else
       'draw'
     end

@@ -37,4 +37,17 @@ class Cards
     @choosen_card = deck[rand(@deck.size)]
     self.deck -= [@choosen_card]
   end
+
+  def value_cards(name, cards_hash)
+    @sum_cards = 0
+    name.cards.each do |x|
+      cards_hash.each_pair { |key, value| @sum_cards += value if x == key }
+    end
+    if @sum_cards > 21 && name.cards.find do |x|
+      x.chars[0] == 'A'
+    end
+      @sum_cards -= 10
+    end
+    @sum_cards
+  end
 end
