@@ -11,7 +11,7 @@ class Main
   ================================================
         Выбирите действие:
         1  - Начать новую игру
-        0  - Выход
+        0  - Выход из программы
   ================================================='
       action = gets.to_i
       break if action.zero?
@@ -50,20 +50,14 @@ class Main
       when 1
         @game.set.player_move(:else_one_card)
         puts "Вам добавлена карта #{@game.player.cards[-1]}"
-        puts "Сумма ваших очков #{@game.set.score_player}"
-        puts "Сумма очков диллера #{@game.set.score_dealer}"
-        puts "Победитель #{@game.set.cards_result}"
+        show_results
       when 2
         @game.set.player_move(:dealer_move)
         puts 'Диллеру достаточно'
-        puts "Сумма ваших очков #{@game.set.score_player}"
-        puts "Сумма очков диллера #{@game.set.score_dealer}"
-        puts "Победитель #{@game.set.cards_result}"
+        show_results
       when 3
         @game.set.player_move(:open)
-        puts "Сумма ваших очков #{@game.set.score_player}"
-        puts "Сумма очков диллера #{@game.set.score_dealer}"
-        puts "Победитель #{@game.set.cards_result}"
+        show_results
     end
     puts 'для продолжения игры нажмите 1, для завершения данной игры нажмите 0'
     choose = gets.chomp.to_i
@@ -73,6 +67,16 @@ class Main
         player_move
       when 2
         return
+    end
+  end
+
+  def show_results
+    puts "Сумма ваших очков #{@game.set.score_player}"
+    puts "Сумма очков диллера #{@game.set.score_dealer}"
+    if @game.set.cards_result == 'draw'
+      puts 'Ничья'
+    else
+      puts "Победитель #{@game.set.cards_result}"
     end
   end
 end
