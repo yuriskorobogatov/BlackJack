@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Players
+class Player
   attr_reader :name, :cards
   attr_accessor :money
   def initialize(name, money = 100)

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'cards.rb'
+require_relative 'deck.rb'
 class Round
   attr_reader :object_cards, :player, :dealer
   attr_accessor :cards
@@ -8,7 +8,7 @@ class Round
   def initialize(player, dealer)
     @player = player
     @dealer = dealer
-    @object_cards = Cards.new
+    @object_cards = Deck.new
     player.cards.clear
     dealer.cards.clear
     2.times do

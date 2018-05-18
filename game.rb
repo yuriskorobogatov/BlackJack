@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'players.rb'
+require_relative 'player.rb'
 require_relative 'round.rb'
 
 class Game
@@ -8,8 +8,8 @@ class Game
   attr_accessor :round
 
   def initialize(name)
-    @player = Players.new(name)
-    @dealer = Players.new('dealer')
+    @player = Player.new(name)
+    @dealer = Player.new('dealer')
     start_new_round
   end
 

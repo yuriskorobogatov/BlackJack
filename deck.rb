@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative '../../my_tasks/BlackJack/players'
+require_relative 'player.rb'
 
-class Cards
+class Deck
   attr_reader :cards_without_lears, :choosen_card, :full_cards, :sum_cards
   attr_accessor :deck
 
@@ -14,7 +14,7 @@ class Cards
     @cards_without_lears = num | %w[J Q K A]
     lears = ['♣', '♥', '♠', '♦']
     lears.each do |y|
-      cards_without_lears.collect { |x| @deck << (x + y).to_s }
+      @cards_without_lears.collect { |x| @deck << (x + y).to_s }
     end
     @full_cards = @deck
   end
