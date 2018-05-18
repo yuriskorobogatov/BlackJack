@@ -59,6 +59,7 @@ class Main
         @game.set.player_move(:open)
         show_results
     end
+    return if @game.player.money < 10 || @game.dealer.money < 10
     puts 'для продолжения игры нажмите 1, для завершения данной игры нажмите 0'
     choose = gets.chomp.to_i
     case choose
@@ -72,7 +73,9 @@ class Main
 
   def show_results
     puts "Сумма ваших очков #{@game.set.score_player}"
+    puts "Ваш баланс составляет #{@game.set.player_money}"
     puts "Сумма очков диллера #{@game.set.score_dealer}"
+    puts "Баланс диллера составляет #{@game.set.dealer_money}"
     if @game.set.cards_result == 'draw'
       puts 'Ничья'
     else

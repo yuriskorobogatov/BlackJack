@@ -15,6 +15,8 @@ class SetCards
       add_card_to(player)
       add_card_to(dealer)
     end
+    @player.money -= 10
+    @dealer.money -= 10
   end
 
   def player_move(deсision)
@@ -24,11 +26,14 @@ class SetCards
         score_player
         check_dealer
         cards_result
+        money
       when :dealer_move
         check_dealer
         cards_result
+        money
       when :open
         cards_result
+        money
     end
   end
 
@@ -68,4 +73,24 @@ class SetCards
       'draw'
     end
   end
+
+  def money
+    if cards_result == @player.name
+       @player.money += 20
+    elsif cards_result == @dealer.name
+       @dealer.money += 20
+    else
+      @player.money += 10
+      @dealer.money += 10
+    end
+  end
+
+  def player_money
+    @player.money
+  end
+
+  def dealer_money
+    @dealer.money
+  end
+
 end
