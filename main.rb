@@ -35,9 +35,9 @@ class Main
   end
 
   def player_move
-    puts "Ваши карты:"
+    puts 'Ваши карты:'
     puts @game.player.cards
-    puts "Сумма ваших очков #{@game.set.score_player}"
+    puts "Сумма ваших очков #{@game.round.score_player}"
     puts '
   ================================================
         Выбирите действие:
@@ -45,41 +45,41 @@ class Main
         2  - Пропустить ход
         3  - Открыть карты
   ================================================='
-        move = gets.chomp.to_i
+    move = gets.chomp.to_i
     case move
-      when 1
-        @game.set.player_move(:else_one_card)
-        puts "Вам добавлена карта #{@game.player.cards[-1]}"
-        show_results
-      when 2
-        @game.set.player_move(:dealer_move)
-        puts 'Диллеру достаточно'
-        show_results
-      when 3
-        @game.set.player_move(:open)
-        show_results
+    when 1
+      @game.round.player_move(:else_one_card)
+      puts "Вам добавлена карта #{@game.player.cards[-1]}"
+      show_results
+    when 2
+      @game.round.player_move(:dealer_move)
+      puts 'Диллеру достаточно'
+      show_results
+    when 3
+      @game.round.player_move(:open)
+      show_results
     end
     return if @game.player.money < 10 || @game.dealer.money < 10
     puts 'для продолжения игры нажмите 1, для завершения данной игры нажмите 0'
     choose = gets.chomp.to_i
     case choose
-      when 1
-        @game.start_new_set
-        player_move
-      when 2
-        return
+    when 1
+      @game.start_new_round
+      player_move
+    when 2
+      return
     end
   end
 
   def show_results
-    puts "Сумма ваших очков #{@game.set.score_player}"
-    puts "Ваш баланс составляет #{@game.set.player_money}"
-    puts "Сумма очков диллера #{@game.set.score_dealer}"
-    puts "Баланс диллера составляет #{@game.set.dealer_money}"
-    if @game.set.cards_result == 'draw'
+    puts "Сумма ваших очков #{@game.round.score_player}"
+    puts "Ваш баланс составляет #{@game.round.player_money}"
+    puts "Сумма очков диллера #{@game.round.score_dealer}"
+    puts "Баланс диллера составляет #{@game.round.dealer_money}"
+    if @game.round.cards_result == 'draw'
       puts 'Ничья'
     else
-      puts "Победитель #{@game.set.cards_result}"
+      puts "Победитель #{@game.round.cards_result}"
     end
   end
 end
